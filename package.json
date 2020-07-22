@@ -1,0 +1,16 @@
+{
+  "name": "cpi",
+  "version": "1.0.0",
+  "description": "a website for s478kv",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Shreyansh Mishra, Sarthak Mishra",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^3.1.3",
+    "express": "^4.17.1",
+    "path": "^0.12.7"
+  }
+}
