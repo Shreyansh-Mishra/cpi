@@ -7,43 +7,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="/views/style.css">
-    <script src="/index.js"></script>
+    <link rel="stylesheet" href="/views/index/style.css">
 </head>
 
 <body id="bgimg" bgcolor="black">
-
-<script>
-    function changeIt(room){
-    if(room==='s8'){
-        if(document.getElementById('changes8').src==='/images/dooropen.png'){
-            document.getElementById('changes8').src='/images/doorcloses8.png';
-        }
-        else{
-            document.getElementById('changes8').src='/images/dooropen.png';
-        }
-    }
-    else if(room==='s7')    {
-        if(document.getElementById('changes7').src==='/images/dooropen.png'){
-            document.getElementById('changes7').src='/images/doorcloses7.png';
-        }
-        else{
-            document.getElementById('changes7').src='/images/dooropen.png';
-        }
-    }
-    else if(room==='s4')    {
-        if(document.getElementById('changes4').src==='/images/dooropen.png'){
-            document.getElementById('changes4').src='/images/doorcloses4.png';
-        }
-        else{
-            document.getElementById('changes4').src='/images/dooropen.png';
-        }
-    }
-    }
-</script>
-
-
-
     <script>document.body.className += 'fade-out';</script>
     
     <script>$(function() {
@@ -55,7 +22,7 @@
 <div class="topnav" id="myTopnav">
   <a href="#home" class="active">Home</a>
   <a href="#news">Polls</a>
-  <a href="#contact">Forms</a>
+  <a href="/form">Forms</a>
   <a href="#about">Login</a>
   <a href="#chatroom">Chatroom</a>
   <a href="javascript:void(0);" class="icon" onclick="myFunction()">
@@ -78,9 +45,10 @@ function myFunction() {
     <p id="welcome">☆ ☆ ☆ Welcome ☆ ☆ ☆</p>
 </div><br><br><br><br><br><br>
 <div class="imgrow">
-    <div class="imgcol"><img src="/images/doorcloses8.png" width="100%" id="changes8" onclick="changeIt('s8');"/></div>
-    <div class="imgcol"><img src="/images/doorcloses7.png" width="100%" id="changes7" onclick="changeIt('s7');"/></div>
-    <div class="imgcol"><img src="/images/doorcloses4.png" width="100%" id="changes4" onclick="changeIt('s4');"/></div>
+    <div class="imgcol"><img src="/images/doorcloses8.png" width="100%" id="changes8"/></div>
+    <div class="imgcol"><img src="/images/doorcloses7.png" width="100%" id="changes7"/></div>
+    <div class="imgcol"><img src="/images/doorcloses4.png" width="100%" id="changes4"/></div>
+    <script src="/views/index/index.js"></script>
 </div>
 
 
@@ -102,5 +70,6 @@ function myFunction() {
       }
     }
     </script>
+
 </body>
 </html>
