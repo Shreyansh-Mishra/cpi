@@ -1,4 +1,7 @@
-
+@font-face{
+  font-family: Lexend;
+  src: url('/fonts/lexend.ttf');
+}
 body {
   opacity: 1;
   transition: 3s opacity;
@@ -23,7 +26,7 @@ body.fade-out {
 
 /* Add a black background color to the top navigation */
 .topnav {
-  opacity: 0.5;
+  opacity: 0.7;
   background-color: #333;
   overflow: hidden;
 }
@@ -80,4 +83,36 @@ body.fade-out {
     display: block;
     text-align: left;
   }
+}
+
+#welcome{
+  font-size: 3vw;
+  color: #f2f2f2;
+  text-align: center;
+  font-family: Lexend;
+}
+
+.imgrow{
+  display: flex;
+}
+
+.imgcol{
+  flex: 33.33%;
+  padding: 5px;
+}
+
+.content {
+  padding: 16px;
+}
+
+/* The sticky class is added to the navbar with JS when it reaches its scroll position */
+.sticky {
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+
+/* Add some top padding to the page content to prevent sudden quick movement (as the navigation bar gets a new position at the top of the page (position:fixed and top:0) */
+.sticky + .content {
+  padding-top: 150px;
 }
