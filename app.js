@@ -1,6 +1,6 @@
 var express = require('express');
 var path = require('path');
-app= express()
+var app= express();
 let ejs = require('ejs');
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
