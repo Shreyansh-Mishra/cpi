@@ -14,10 +14,8 @@ body.fade-out {
 
 #bgimg {
     background: url("/images/background.png") no-repeat center center;
-    background-blend-mode: lighten;
     background-attachment: fixed;
     background-size: cover;
-    background-color: black;
   }
 
   .toptitleimage{
