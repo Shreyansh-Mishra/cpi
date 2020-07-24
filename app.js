@@ -77,4 +77,9 @@ app.get('/profile/:id', async function (req, res) {
     }
 })
 
+app.use(function(req, res, next){
+    res.status(404);
+    res.render(path.join(__dirname, '/public/views/404/index.ejs'), {url: req.url});
+  });
+
 app.listen(3000);
