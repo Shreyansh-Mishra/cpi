@@ -7,7 +7,7 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const Post = require('./models/user.js');
+const User = require('./models/user.js');
 
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
@@ -21,12 +21,12 @@ app.get('/form',function(req,res) {
 })
 
 app.get('/showdb', async function(req,res) {
-    db = await Post.find({'bio': 'pro at csgo'})
+    db = await User.find({'bio': 'pro at csgo'})
     res.send(db)
 })
 
 app.post('/submitform', (req, res) => {
-    var post = new Post(req.body);
+    var post = new User(req.body);
     console.log(req.body)
     post.save(function(err, user) {
         if(err) console.log(err);
@@ -34,5 +34,15 @@ app.post('/submitform', (req, res) => {
     });
 });
 
+app.get('/profile/:id', async function(req,res){
+    var users = await User.find({});
+    var userprofile = users[parseInt(req.params.id)-1];
+    if(userprofile){
+    res.render(path.join(__dirname, '/public/profile/profile.ejs'), {profile: userprofile});
+    }
+    else{
+        res.send('User Not Found');
+    }
+})
 
 app.listen(3000);

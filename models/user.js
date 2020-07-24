@@ -1,7 +1,8 @@
 //import mongoose
 const mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-mongoose.connect("your db link", { useNewUrlParser: true })
+mongoose.connect("your db link", { useNewUrlParser: true, useUnifiedTopology: true })
+
 const userData = new Schema({
     name: {type: String, required: true},
     bio: {type: String, default: "Student at IIITV"},
@@ -15,5 +16,5 @@ const userData = new Schema({
  
 });
 
-var Post = mongoose.model('Post', userData);
-module.exports = Post;
+var User = mongoose.model('User', userData);
+module.exports = User;
