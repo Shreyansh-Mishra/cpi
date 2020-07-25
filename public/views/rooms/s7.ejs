@@ -9,11 +9,11 @@
 <body>
 
     <div class="topnav" id="myTopnav">
-        <a href="#home" class="active">Home</a>
-        <a href="#news">Polls</a>
-        <a href="/form">Forms</a>
-        <a href="#about">Login</a>
-        <a href="#chatroom">Chatroom</a>
+      <a href="/" class="active">Home</a>
+      <a href="#polls">Polls</a>
+      <a href="/form">Forms</a>
+      <a href="#login">Login</a>
+      <a href="#chatroom">Chatroom</a>
         <a href="javascript:void(0);" class="icon" onclick="myFunction()">
           <i class="fa fa-bars"></i>
         </a>
@@ -29,6 +29,7 @@
         }
       }   
       </script>
+<% let i=0; %>
 <%profile.forEach(function(element){ %>
     <div id="row">
         <div id="col">
@@ -36,7 +37,10 @@
         </div>
         <div id="col">
             <br><br><br>
+            <a href="/profile/<%= indexes[i]+1 %>">
             <%=element.name%>
+            </a>
+            <%i++%>
         </div>
     </div>
     <%})%> 
