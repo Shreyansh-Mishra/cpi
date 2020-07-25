@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/views/rooms/style.css">
+</head>
+<body>
+
+    <div class="topnav" id="myTopnav">
+        <a href="#home" class="active">Home</a>
+        <a href="#news">Polls</a>
+        <a href="/form">Forms</a>
+        <a href="#about">Login</a>
+        <a href="#chatroom">Chatroom</a>
+        <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+          <i class="fa fa-bars"></i>
+        </a>
+      </div>
+      <script>
+          /* Toggle between adding and removing the "responsive" class to topnav when the user clicks on the icon */
+      function myFunction() {    
+        var x = document.getElementById("myTopnav");
+        if (x.className === "topnav") {
+          x.className += " responsive";
+        } else {
+          x.className = "topnav";
+        }
+      }   
+      </script>
+<%profile.forEach(function(element){ %>
+    <div id="row">
+        <div id="col">
+        <img src="/images/<%=element.name.split(' ').join('').toLowerCase()%>.jpg" id="thumbnail">
+        </div>
+        <div id="col">
+            <br><br><br>
+            <%=element.name%>
+        </div>
+    </div>
+    <%})%> 
+</body>
+</html>

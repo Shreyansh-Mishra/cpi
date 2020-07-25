@@ -8,6 +8,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
+var underdevelopment = false;
 app.set('json spaces', 2);
 
 
@@ -25,14 +26,20 @@ app.get('/form', function (req, res) {
 })
 
 app.get('/showdb', async function (req, res) {
+    if(underdevelopment){
     db = await User.find({})
     res.json(db)
+    }
+    else{
+        res.status(404);
+    res.render(path.join(__dirname, '/public/views/404/index.ejs'), {url: req.url});
+    }
 })
 
 app.get('/updatedb', async function (req, res) {
-
-    const filter = {};
-    const update = {};
+    if(underdevelopment){
+    const filter = {'name': 'Vikrant Kumar'};
+    const update = {'dob': '03-03-2002'};
     if(filter==={}){
         res.send('no filter was provided.')
     }
@@ -44,9 +51,15 @@ app.get('/updatedb', async function (req, res) {
     db = await User.find({})
     res.json(db)
 }
+}
+else{
+    res.status(404);
+    res.render(path.join(__dirname, '/public/views/404/index.ejs'), {url: req.url});
+}
 })
 
 app.get('/deletedb', async function(req, res) {
+    if(underdevelopment){
     arg = {}
     if (arg==={}) {
         res.send('delete arg cannot be empty');
@@ -54,6 +67,11 @@ app.get('/deletedb', async function(req, res) {
     else {
         db = await User.find(arg).remove();
     }
+}
+else{
+    res.status(404);
+    res.render(path.join(__dirname, '/public/views/404/index.ejs'), {url: req.url});
+}
 })
 
 app.post('/submitform', (req, res) => {
@@ -76,6 +94,49 @@ app.get('/profile/:id', async function (req, res) {
         res.send('User Not Found');
     }
 })
+
+
+
+app.get('/rooms/:id',async function(req,res){
+    var rooms = ['s4' , 's7', 's8'];
+    var users = await User.find({});
+    var people = []
+    if(req.params.id==='s8'){
+    users.forEach(function(profile){
+        if(profile.roomNumber.toLowerCase()==='s8' || profile.roomNumber==='8'){
+            people.push(profile);
+        }
+    })
+res.render(path.join(__dirname, 'public/views/rooms/s8.ejs'),{profile: people});
+    }
+    else if(req.params.id==='s7'){
+        users.forEach(function(profile){
+            if(profile.roomNumber.toLowerCase()==='s7' || profile.roomNumber==='7'){
+                people.push(profile);
+            }
+        })
+    res.render(path.join(__dirname, 'public/views/rooms/s7.ejs'),{profile: people});
+    }
+
+    else if(req.params.id==='s4'){
+        users.forEach(function(profile){
+            if(profile.roomNumber.toLowerCase()==='s4' || profile.roomNumber==='4'){
+                people.push(profile);
+            }
+        })
+    res.render(path.join(__dirname, 'public/views/rooms/s4.ejs'),{profile: people});
+    }
+
+    else{
+        res.status(404);
+        res.render(path.join(__dirname, '/public/views/404/index.ejs'), {url: req.url});
+    }
+})
+
+
+
+
+
 
 app.use(function(req, res, next){
     res.status(404);
