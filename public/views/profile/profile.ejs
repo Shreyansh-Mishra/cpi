@@ -8,14 +8,20 @@
 </head>
 <body>
     <div class="row">
-        <div class="col"><img src="/images/<%=profile.name.split(' ').join('').toLowerCase()%>.jpg"></div>
+        <div class="container">
+        <div class="col"><img src="/images/<%=profile.name.split(' ').join('').toLowerCase()%>.jpg">
+            <div class="overlay">
+                <div class="text"><%=profile.name%></div>
+              </div>
+        </div>
+        </div>
         <div class="col" id="heading"><%= profile.name %><br>
             <p id="profiletext">"<%=profile.bio %>"</p>
             <p id="profiletextsmall" >DOB: <%=profile.dob%></p>
             <p id="profiletextsmall" >Room: <%=profile.roomNumber %></a></p>
             <p id="profiletextsmall" >Codeforces: <a href="<%=profile.codeforces %>"><%=profile.codeforces %></a></p>
-            <p id="profiletextsmall" >CodeChef: &nbsp&nbsp&nbsp<a href="<%=profile.codechef %>"><%=profile.codechef%></a></p>
-            <p id="profiletextsmall" >Github: &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<a href="<%=profile.github %>"><%=profile.github %></a></p>
+            <p id="profiletextsmall" >CodeChef: <a href="<%=profile.codechef %>"><%=profile.codechef%></a></p>
+            <p id="profiletextsmall" >Github: <a href="<%=profile.github %>"><%=profile.github %></a></p>
         
         </div>
     </div>
