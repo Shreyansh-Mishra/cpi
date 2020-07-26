@@ -12,8 +12,9 @@ const userData = new Schema({
     codeforces: String,
     codechef: String,
     github: String,
-    username: {type: String, default: null},
-    password: {type: String, default: null} 
+    username: {type: String, required: true},
+    password: {type: String, required: true},
+    instituteEmail: {type: String, default: null} 
 });
 
 var User = mongoose.model('User', userData);
