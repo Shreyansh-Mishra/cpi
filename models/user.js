@@ -1,7 +1,7 @@
 //import mongoose
 const mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-mongoose.connect("your db link", { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect("Your DB Link", { useNewUrlParser: true, useUnifiedTopology: true })
 
 const userData = new Schema({
     name: {type: String, required: true},
@@ -10,7 +10,9 @@ const userData = new Schema({
     roomNumber: {type: String, required: true},
     codeforces: String,
     codechef: String,
-    github: String
+    github: String,
+    username: {type: String, default: null},
+    password: {type: String, default: null}
 
 
  

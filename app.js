@@ -12,7 +12,12 @@ var underdevelopment = false;
 app.set('json spaces', 2);
 
 
+app.get('/signup', function(req,res){
+  res.render(path.join(__dirname, '/public/views/signup/signup.ejs'))  
+})
+
 const User = require('./models/user.js');
+const Sign = require('./models/sign.js');
 
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
@@ -58,6 +63,41 @@ else{
 }
 })
 
+// random password generator
+
+function makeid(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+       result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+ }
+
+
+//updating userID and password
+
+app.get('/updatelogin', async function (req, res) {
+    if(underdevelopment){
+        let db = await User.find({});
+        db.forEach(async user => {
+            var Password = makeid(6);
+            var userName = user.name.split(' ').join('').toLowerCase();
+            user.username = userName;
+            user.password = Password;
+            await user.save();
+        })
+        res.json(db);
+    }
+
+else{
+    res.status(404);
+    res.render(path.join(__dirname, '/public/views/404/index.ejs'), {url: req.url});
+}
+})
+
+
 app.get('/deletedb', async function(req, res) {
     if(underdevelopment){
     arg = {}
@@ -82,6 +122,7 @@ app.post('/submitform', (req, res) => {
         return res.send("Success! Your post has been saved.");
     });
 });
+
 
 app.get('/profile/:id', async function (req, res) {
     var users = await User.find({});
