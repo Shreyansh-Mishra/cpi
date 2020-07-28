@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    You are editing profile of <%=user.name%><br><br>
+    <form action="/changeprofile/<%=id%>" method="POST">
+    Username: <input type="text" name="username"><br><br>
+    Password: <input type="password" name="password"><br><br>
+    Bio:<br><br> <input name="bio" type="text" placeholder="Describe Yourself" value="<%=user.bio%>"><br><br>
+    Codeforces Profile Link:<br><br> <input name="codeforces" type="text" placeholder="Your Profile link... " value="<%=user.codeforces%>"><br><br>
+    CodeChef Profile Link:<br><br> <input name="codechef" type="text" placeholder="Your Profile link..." value="<%=user.codechef%>"><br><br>
+    Github Profile Link:<br><br> <input name="github" type="text" placeholder="Your Profile Link..." value="<%=user.github%>"><br><br>
+    New Username:<br><br> <input type="text" name="newusername" placeholder="Username to be used for this website..." value="<%=user.username%>"><br><br>
+    New Password:<br><br> <input type="password" name="newpassword" value="<%=user.password%>"><br><br>
+    <input type="submit">
+    </form>
+</body>
+</html>

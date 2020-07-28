@@ -18,7 +18,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
-var underdevelopment = false;
+var underdevelopment = true;
 app.set('json spaces', 2);
 
 
@@ -42,7 +42,7 @@ app.get('/form', function (req, res) {
 app.get('/showdb', async function (req, res) {
     if (underdevelopment) {
         db = await User.find({})
-        res.json(db)
+        res.status(200).json(db)
     } else {
         res.status(404);
         res.render(path.join(__dirname, '/public/views/404/index.ejs'), {
@@ -131,7 +131,8 @@ app.get('/profile/:id', async function (req, res) {
     var userprofile = users[parseInt(req.params.id) - 1];
     if (userprofile) {
         res.render(path.join(__dirname, '/public/views/profile/profile.ejs'), {
-            profile: userprofile
+            profile: userprofile,
+            id: req.params.id
         });
     } else {
         res.send('User Not Found');
@@ -242,6 +243,32 @@ app.post('/sendemail', async (req, res) => {
     }
 })
 
+
+app.get('/editprofile/:id', async(req, res) => {
+    let user = await User.find({})
+    user = user[parseInt(req.params.id)-1]
+    console.log(user)
+    res.render(path.join(__dirname, '/public/views/editprofile/editprofile.ejs'), {user: user, id: req.params.id})
+
+})
+
+app.post('/changeprofile/:id', async (req, res) => {
+    let id = req.params.id;
+    let data = req.body;
+    let user = await User.findOne({'username': data.username, 'password': data.password})
+    if (user===null) {
+        res.send('You entered the wrong Username/Password.')
+    }
+    else {
+        Object.keys(data).forEach(m => {
+            user[m] = data[m]
+        });
+        await user.save();
+        res.send('Changed your data successfully.')
+    }
+
+
+})
 
 app.use(function (req, res, next) {
     res.status(404);
