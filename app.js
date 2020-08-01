@@ -3,6 +3,8 @@ var path = require('path');
 var app = express();
 var router = express.Router();
 let ejs = require('ejs');
+const http = require('http').Server(app)
+const io = require('socket.io')(http)
 var bodyParser = require('body-parser');
 var nodemailer = require('nodemailer');
 require('dotenv').config()
@@ -18,6 +20,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
+
 var underdevelopment = true;
 app.set('json spaces', 2);
 
@@ -27,6 +30,7 @@ app.get('/signup', function (req, res) {
 })
 
 const User = require('./models/user.js');
+const todo = require('./models/event.js');
 
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
@@ -138,8 +142,6 @@ app.get('/profile/:id', async function (req, res) {
         res.send('User Not Found');
     }
 })
-
-
 
 app.get('/rooms/:id', async function (req, res) {
     var rooms = ['s4', 's7', 's8'];
@@ -268,6 +270,36 @@ app.post('/changeprofile/:id', async (req, res) => {
     }
 
 
+})
+
+app.get('/addevent',(req,res)=>{
+    res.render(path.join(__dirname, '/public/views/event/event.ejs'));
+})
+
+app.post('/eventpending',async (req,res)=>{
+    var addTodo = new todo(req.body);
+    
+
+    await addTodo.save( function (err, user) {
+        if(err){
+            console.log('error')
+        }
+        else{
+            res.redirect('/eventplanner')
+        }
+    })
+})
+
+app.get('/eventplanner',async (req,res)=>{
+    var pending = await todo.find({})
+    var eventleft = []
+    var name = []
+    pending.forEach((ele)=>{
+        eventleft.push(ele.todo)
+        name.push(ele.by)
+    })
+    res.render(path.join(__dirname, '/public/views/event/pendingevents.ejs'), {tpending: eventleft, name: name})
+    
 })
 
 app.use(function (req, res, next) {
