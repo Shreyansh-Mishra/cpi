@@ -16,6 +16,7 @@ var transporter = nodemailer.createTransport({
     }
 });
 
+app.use('/favicon.ico', express.static('public/favicon.ico'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
@@ -46,7 +47,10 @@ app.get('/form', function (req, res) {
 app.get('/showdb', async function (req, res) {
     if (underdevelopment) {
         db = await User.find({})
-        res.status(200).json(db)
+        db2 = await todo.find({})
+        res.status(200)
+        res.type('json');
+        res.send("User Database:\n\n"+JSON.stringify(db2, null, "\t")+ "\n\nEvent Database:\n\n"+JSON.stringify(db, null, "\t"))
     } else {
         res.status(404);
         res.render(path.join(__dirname, '/public/views/404/index.ejs'), {
@@ -246,22 +250,27 @@ app.post('/sendemail', async (req, res) => {
 })
 
 
-app.get('/editprofile/:id', async(req, res) => {
+app.get('/editprofile/:id', async (req, res) => {
     let user = await User.find({})
-    user = user[parseInt(req.params.id)-1]
+    user = user[parseInt(req.params.id) - 1]
     console.log(user)
-    res.render(path.join(__dirname, '/public/views/editprofile/editprofile.ejs'), {user: user, id: req.params.id})
+    res.render(path.join(__dirname, '/public/views/editprofile/editprofile.ejs'), {
+        user: user,
+        id: req.params.id
+    })
 
 })
 
 app.post('/changeprofile/:id', async (req, res) => {
     let id = req.params.id;
     let data = req.body;
-    let user = await User.findOne({'username': data.username, 'password': data.password})
-    if (user===null) {
+    let user = await User.findOne({
+        'username': data.username,
+        'password': data.password
+    })
+    if (user === null) {
         res.send('You entered the wrong Username/Password.')
-    }
-    else {
+    } else {
         Object.keys(data).forEach(m => {
             user[m] = data[m]
         });
@@ -272,34 +281,36 @@ app.post('/changeprofile/:id', async (req, res) => {
 
 })
 
-app.get('/addevent',(req,res)=>{
+app.get('/addevent', (req, res) => {
     res.render(path.join(__dirname, '/public/views/event/event.ejs'));
 })
 
-app.post('/eventpending',async (req,res)=>{
+app.post('/eventpending', async (req, res) => {
     var addTodo = new todo(req.body);
-    
 
-    await addTodo.save( function (err, user) {
-        if(err){
+
+    await addTodo.save(function (err, user) {
+        if (err) {
             console.log('error')
-        }
-        else{
+        } else {
             res.redirect('/eventplanner')
         }
     })
 })
 
-app.get('/eventplanner',async (req,res)=>{
+app.get('/eventplanner', async (req, res) => {
     var pending = await todo.find({})
     var eventleft = []
     var name = []
-    pending.forEach((ele)=>{
+    pending.forEach((ele) => {
         eventleft.push(ele.todo)
         name.push(ele.by)
     })
-    res.render(path.join(__dirname, '/public/views/event/pendingevents.ejs'), {tpending: eventleft, name: name})
-    
+    res.render(path.join(__dirname, '/public/views/event/pendingevents.ejs'), {
+        tpending: eventleft,
+        name: name
+    })
+
 })
 
 app.use(function (req, res, next) {
