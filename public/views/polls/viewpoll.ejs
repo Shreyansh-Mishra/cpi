@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form action="/submitpoll" method="POST">
+        Username:<br><input type="text" name="username"><br><br>
+        Password:<br><input type="password" name="password"><br><br>
+        <input name="id" type="text" value="<%=id%>"><br><br>
+    <%var i=1%>
+    <div>Question:<%=question%></div>
+    <%options.forEach(ele=>{%>
+        <div>
+        <input type="radio" name="choice" id="choice" value="<%=ele.option%>"> <%=ele.option%><br>
+        <%i++%>
+    </div>
+    <%})%>
+    <input type="submit">
+</form>
+
+</body>
+</html>
