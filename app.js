@@ -32,7 +32,8 @@ app.get('/signup', function (req, res) {
 
 const User = require('./models/user.js');
 const todo = require('./models/event.js');
-
+const Polls = require('./models/polls.js');
+const polls = require('./models/polls.js');
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
@@ -48,9 +49,10 @@ app.get('/showdb', async function (req, res) {
     if (underdevelopment) {
         db = await User.find({})
         db2 = await todo.find({})
+        db3 = await Polls.find({})
         res.status(200)
         res.type('json');
-        res.send("User Database:\n\n"+JSON.stringify(db2, null, "\t")+ "\n\nEvent Database:\n\n"+JSON.stringify(db, null, "\t"))
+        res.send("User Database:\n\n"+JSON.stringify(db, null, "\t")+ "\n\nEvent Database:\n\n"+JSON.stringify(db2, null, "\t")+"\n\nPoll Database:\n\n"+JSON.stringify(db3, null, "\t"))
     } else {
         res.status(404);
         res.render(path.join(__dirname, '/public/views/404/index.ejs'), {
@@ -77,7 +79,7 @@ app.get('/updatedb', async function (req, res) {
 
 function makeid(length) {
     var result = '';
-    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789$-_.+!*(),';
     var charactersLength = characters.length;
     for (var i = 0; i < length; i++) {
         result += characters.charAt(Math.floor(Math.random() * charactersLength));
@@ -208,7 +210,7 @@ app.get('/broadcast', async function (req, res) {
         nameuser: names,
         makeid: function (length) {
             var result = '';
-            var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789$-_.+!*(),';
             var charactersLength = characters.length;
             for (var i = 0; i < length; i++) {
                 result += characters.charAt(Math.floor(Math.random() * charactersLength));
@@ -312,6 +314,84 @@ app.get('/eventplanner', async (req, res) => {
     })
 
 })
+
+app.get('/createpoll', (req, res) => {
+    res.render(path.join(__dirname, "/public/views/polls/createpoll.ejs"));
+})
+
+app.post('/makepoll', async (req, res) => {
+    let data = req.body;
+    let user = await User.findOne({'username': data.username, 'password': data.password});
+    if (user===null) {
+        res.send("Your Username/Password is incorrect, or not registered in our Database.");
+    }
+    else {
+        let options = data.options.split('\n');
+        data.options = [];
+        for (let i = 0; i < options.length; i++) {
+            if (options[i]!="\r") {
+            data.options[i] = {
+                "option": options[i].replace("\r", "")
+            }
+        }
+        }
+        data.by = user.name;
+        data.id = makeid(12);
+        let addPoll = new Polls(data);
+        await addPoll.save((error, user) => {
+            if (error) {
+                console.log(error);
+                res.send('An error has occured while saving your poll.');
+             }
+            else {
+                 res.redirect('/poll/'+data.id);
+            }
+         })
+    }
+})
+
+app.get('/poll/:id', async (req, res) => {
+    let poll = await Polls.findOne({'id': req.params.id});
+    
+    if (poll===null) {
+        res.send("No poll with the ID '" + req.params.id + "' was found.");
+    }
+    else {
+        let question = poll.question;
+        let options = poll.options;
+        res.render(path.join(__dirname,'/public/views/polls/viewpoll.ejs'), {question, options,id: req.params.id})
+    }
+})
+
+app.post('/submitpoll', async (req,res)=>{
+    let data = req.body;
+    console.log(data)
+    let user = await User.findOne({'username': data.username, 'password': data.password})
+    if (user===null){
+        res.send('Your Username/Password is wrong or not registered in the database.')
+    }
+    else{
+        let poll = await Polls.findOne({'id': data.id})
+        if(poll === null){
+            res.send('Poll not found')
+        }
+        else{
+            if(!poll.votedby.includes(user.name)) {
+            option = poll.options.find(x => x.option===data.choice)
+            option.votes+=1;
+            poll.votedby.push(user.name)
+            await poll.save();
+            res.send('Voted Successfully')
+        }
+            else{
+                res.send('You have already voted for this poll!');
+            }
+        }
+    }
+})
+
+
+
 
 app.use(function (req, res, next) {
     res.status(404);
