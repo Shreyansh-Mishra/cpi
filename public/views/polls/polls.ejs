@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/views/polls/poll.css">
+    <title>Polls</title>
+</head>
+<body>
+    <center><p>Polls</p></center>
+    <%let i=1%>
+    <%polls.forEach(poll=>{%>
+        <%=i%>. <%=poll.question%><br>
+        <br><button onclick="document.location = '/poll/<%=poll.id%>'">Vote</button>&nbsp;<button onclick="document.location = '/viewpoll/<%=poll.id%>'">Results</button><br><br>
+        <%i++%>
+    <%})%>
+</body>
+</html>
