@@ -1,4 +1,5 @@
 var express = require('express');
+const http = require('http');
 var path = require('path');
 var app = express();
 let ejs = require('ejs');
@@ -438,6 +439,11 @@ app.post('/showpoll/:id', async (req, res) => {
     }
 })
 
+app.get('/keepalive', async (req, res) => {
+    res.send('Ping Recieved');
+    console.log('Ping Recieved');
+})
+
 app.use(function (req, res, next) {
     res.status(404);
     res.render(path.join(__dirname, '/public/views/404/index.ejs'), {
@@ -445,4 +451,9 @@ app.use(function (req, res, next) {
     });
 });
 
+
+
 app.listen(3000);
+setInterval(() => {
+    http.get(`http://localhost:3000/keepalive`);
+  }, 30000);
