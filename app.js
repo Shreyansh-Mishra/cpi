@@ -381,7 +381,7 @@ app.post('/submitpoll', async (req,res)=>{
             option.votes+=1;
             poll.votedby.push(user.name)
             await poll.save();
-            res.send('Voted Successfully')
+            res.redirect('/viewpoll/'+data.id)
         }
             else{
                 res.send('You have already voted for this poll!');
@@ -390,8 +390,27 @@ app.post('/submitpoll', async (req,res)=>{
     }
 })
 
+app.get('/viewpoll/:id', async (req, res) => {
+  res.render(path.join(__dirname + "/public/views/polls/resultform.ejs"),{id: req.params.id})  
+})
 
-
+app.post('/showpoll/:id', async(req, res)=>{
+    let data = req.body;
+    let user = await User.findOne({'username':data.username, 'password':data.password})
+    if(user===null){
+        res.send('Username/password is incorrect or not registered in our database')
+    }
+    else{
+        let poll = await Polls.findOne({'id': req.params.id})
+        let votedby = poll.votedby;
+        if(votedby.includes(user.name)) {
+            res.render(path.join(__dirname,'/public/views/polls/result.ejs'),{poll, authorised:true})
+        }
+        else{
+            res.send('you have not voted yet, please vote to see the results!')
+        }
+    }
+})
 
 app.use(function (req, res, next) {
     res.status(404);
