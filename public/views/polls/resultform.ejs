@@ -7,7 +7,9 @@
     <link rel="stylesheet" href="/views/polls/resultform.css">
 </head>
 <body>
+    
     <form action="/showpoll/<%=id%>" method="POST">
+        <div style="font-size: 2vw;">Sign In to view Poll Results</div><br><br>
         Username :<br><input type="text" name="username"><br><br>
         Password :<br><input type="password" name="password"><br><br>
         <input type="text" value="<%=id%>" name="id"><br><br>
