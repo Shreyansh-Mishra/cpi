@@ -1,0 +1,31 @@
+@font-face{
+    font-family: Lexend;
+    src: url('/fonts/lexend.ttf');
+  }
+form{
+    text-align: center;
+    font-family: Verdana;
+    font-size: 1.3vw;
+    font-weight: bold;
+}
+input{
+    font-family: Lexend;
+    font-weight: bolder;
+    padding: 10px;
+    width: 50%;
+    background:none;
+   border-bottom: 2px solid red;
+   outline: none;
+   margin: 0% 25% 0% 25%;
+}
+input:focus {
+    border-bottom: 4px solid red;
+}
+
+#submit{
+    cursor: pointer;
+    width: 10%;
+    background-color: orange; 
+
+}
+
