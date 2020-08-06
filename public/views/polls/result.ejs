@@ -1,0 +1,65 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style type="text/css">
+        #canvas-holder {
+            position: absolute;
+            top: 40%;
+            left: 8%;
+            right: 8%;
+            bottom: 8%;
+        }
+    </style>
+</head>
+<body style="background: url('/images/background.png') no-repeat center center; background-attachment: fixed; background-size: cover; " >
+    <%if(authorised===true){%>
+        
+        <%var options = []%>
+        <%var votes = []%>
+        <%var colors = []%>
+        <%poll.options.forEach(ele=>{%>
+            <%options.push(ele.option)%>
+            <%votes.push(parseInt(ele.votes))%>
+            <%colors.push('#'+(Math.random()*0xFFFFFF<<0).toString(16));%>
+        <%})%>
+        <center><p style="font-size: 2vw; font-family: 'Lucida Console'; color: azure;">Result</center></p>
+            <br><br><br>
+            <center><p style="color: azure; font-family: 'Lucia Console'; font-size: 2vw"><%=poll.question%></p></center> 
+        <br><br><br><br>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js" integrity="sha512-s+xg36jbIujB2S2VKfpGmlC3T5V2TF3lY48DX7u2r9XzGzgPsa6wTpOQA7J9iffvdeBN0q9tKzRxVxw1JviZPg==" crossorigin="anonymous"></script>
+        <div id="canvas-holder">
+        <canvas id="myChart" width="10" height="10"></canvas>
+    </div>
+        <script>
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: <%-JSON.stringify(options)%>,
+            
+                datasets: [{
+                    label: '# of Votes',
+                    
+                    data:   [<%-votes%>],
+                    borderWidth: 1,
+                    backgroundColor: <%-JSON.stringify(colors)%>
+                }]
+            },
+            options: {
+                legend: {
+                    labels: {
+                        fontColor: "azure"
+                    }
+                },
+                maintainAspectRatio: false
+            }
+        });
+        </script>
+    <%}%>
+    
+    </body>
+</html>
