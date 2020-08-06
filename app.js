@@ -1,10 +1,7 @@
 var express = require('express');
 var path = require('path');
 var app = express();
-var router = express.Router();
 let ejs = require('ejs');
-const http = require('http').Server(app)
-const io = require('socket.io')(http)
 var bodyParser = require('body-parser');
 var nodemailer = require('nodemailer');
 require('dotenv').config()
@@ -52,7 +49,7 @@ app.get('/showdb', async function (req, res) {
         db3 = await Polls.find({})
         res.status(200)
         res.type('json');
-        res.send("User Database:\n\n"+JSON.stringify(db, null, "\t")+ "\n\nEvent Database:\n\n"+JSON.stringify(db2, null, "\t")+"\n\nPoll Database:\n\n"+JSON.stringify(db3, null, "\t"))
+        res.send("User Database:\n\n" + JSON.stringify(db, null, "\t") + "\n\nEvent Database:\n\n" + JSON.stringify(db2, null, "\t") + "\n\nPoll Database:\n\n" + JSON.stringify(db3, null, "\t"))
     } else {
         res.status(404);
         res.render(path.join(__dirname, '/public/views/404/index.ejs'), {
@@ -112,11 +109,11 @@ app.get('/updatelogin', async function (req, res) {
 
 app.get('/deletedb', async function (req, res) {
     if (underdevelopment) {
-        arg = {}
+        arg = {'question': 'why are you gay xd'}
         if (arg === {}) {
             res.send('delete arg cannot be empty');
         } else {
-            db = await User.find(arg).remove();
+            db = await Polls.find(arg).remove();
         }
     } else {
         res.status(404);
@@ -266,21 +263,25 @@ app.get('/editprofile/:id', async (req, res) => {
 app.post('/changeprofile/:id', async (req, res) => {
     let id = req.params.id;
     let data = req.body;
-    let user = await User.findOne({
-        'username': data.username,
-        'password': data.password
-    })
-    if (user === null) {
-        res.send('You entered the wrong Username/Password.')
-    } else {
-        Object.keys(data).forEach(m => {
-            user[m] = data[m]
-        });
-        await user.save();
-        res.send('Changed your data successfully.')
+    let user = await User.find({})
+    user = user[id-1];
+    if (user===null || user===undefined) {
+        res.status(404)
+        res.send("User not Found.")
+    }
+    else {
+        if (data.oldusername===user.username) {
+            Object.keys(data).forEach(d => {
+                user[d]=data[d]
+            });
+            await user.save();
+            res.send("Edited your profile.")
+        }
+        else {
+        res.send("you cannot edit the profile of someone else!")
     }
 
-
+    }
 })
 
 app.get('/addevent', (req, res) => {
@@ -315,25 +316,36 @@ app.get('/eventplanner', async (req, res) => {
 
 })
 
+app.get('/polls', async (req, res) => {
+    let polls = await Polls.find({});
+    res.render(path.join(__dirname, '/public/views/polls/polls.ejs'), {
+        polls
+    });
+
+
+})
+
 app.get('/createpoll', (req, res) => {
     res.render(path.join(__dirname, "/public/views/polls/createpoll.ejs"));
 })
 
 app.post('/makepoll', async (req, res) => {
     let data = req.body;
-    let user = await User.findOne({'username': data.username, 'password': data.password});
-    if (user===null) {
+    let user = await User.findOne({
+        'username': data.username,
+        'password': data.password
+    });
+    if (user === null) {
         res.send("Your Username/Password is incorrect, or not registered in our Database.");
-    }
-    else {
+    } else {
         let options = data.options.split('\n');
         data.options = [];
         for (let i = 0; i < options.length; i++) {
-            if (options[i]!="\r") {
-            data.options[i] = {
-                "option": options[i].replace("\r", "")
+            if (options[i] != "\r") {
+                data.options[i] = {
+                    "option": options[i].replace("\r", "")
+                }
             }
-        }
         }
         data.by = user.name;
         data.id = makeid(12);
@@ -342,48 +354,54 @@ app.post('/makepoll', async (req, res) => {
             if (error) {
                 console.log(error);
                 res.send('An error has occured while saving your poll.');
-             }
-            else {
-                 res.redirect('/poll/'+data.id);
+            } else {
+                res.redirect('/poll/' + data.id);
             }
-         })
+        })
     }
 })
 
 app.get('/poll/:id', async (req, res) => {
-    let poll = await Polls.findOne({'id': req.params.id});
-    
-    if (poll===null) {
+    let poll = await Polls.findOne({
+        'id': req.params.id
+    });
+
+    if (poll === null) {
         res.send("No poll with the ID '" + req.params.id + "' was found.");
-    }
-    else {
+    } else {
         let question = poll.question;
         let options = poll.options;
-        res.render(path.join(__dirname,'/public/views/polls/viewpoll.ejs'), {question, options,id: req.params.id})
+        res.render(path.join(__dirname, '/public/views/polls/viewpoll.ejs'), {
+            question,
+            options,
+            id: req.params.id
+        })
     }
 })
 
-app.post('/submitpoll', async (req,res)=>{
+app.post('/submitpoll', async (req, res) => {
     let data = req.body;
     console.log(data)
-    let user = await User.findOne({'username': data.username, 'password': data.password})
-    if (user===null){
+    let user = await User.findOne({
+        'username': data.username,
+        'password': data.password
+    })
+    if (user === null) {
         res.send('Your Username/Password is wrong or not registered in the database.')
-    }
-    else{
-        let poll = await Polls.findOne({'id': data.id})
-        if(poll === null){
+    } else {
+        let poll = await Polls.findOne({
+            'id': data.id
+        })
+        if (poll === null) {
             res.send('Poll not found')
-        }
-        else{
-            if(!poll.votedby.includes(user.name)) {
-            option = poll.options.find(x => x.option===data.choice)
-            option.votes+=1;
-            poll.votedby.push(user.name)
-            await poll.save();
-            res.redirect('/viewpoll/'+data.id)
-        }
-            else{
+        } else {
+            if (!poll.votedby.includes(user.name)) {
+                option = poll.options.find(x => x.option === data.choice)
+                option.votes += 1;
+                poll.votedby.push(user.name)
+                await poll.save();
+                res.redirect('/viewpoll/' + data.id)
+            } else {
                 res.send('You have already voted for this poll!');
             }
         }
@@ -391,22 +409,30 @@ app.post('/submitpoll', async (req,res)=>{
 })
 
 app.get('/viewpoll/:id', async (req, res) => {
-  res.render(path.join(__dirname + "/public/views/polls/resultform.ejs"),{id: req.params.id})  
+    res.render(path.join(__dirname + "/public/views/polls/resultform.ejs"), {
+        id: req.params.id
+    })
 })
 
-app.post('/showpoll/:id', async(req, res)=>{
+app.post('/showpoll/:id', async (req, res) => {
     let data = req.body;
-    let user = await User.findOne({'username':data.username, 'password':data.password})
-    if(user===null){
+    let user = await User.findOne({
+        'username': data.username,
+        'password': data.password
+    })
+    if (user === null) {
         res.send('Username/password is incorrect or not registered in our database')
-    }
-    else{
-        let poll = await Polls.findOne({'id': req.params.id})
+    } else {
+        let poll = await Polls.findOne({
+            'id': req.params.id
+        })
         let votedby = poll.votedby;
-        if(votedby.includes(user.name)) {
-            res.render(path.join(__dirname,'/public/views/polls/result.ejs'),{poll, authorised:true})
-        }
-        else{
+        if (votedby.includes(user.name)) {
+            res.render(path.join(__dirname, '/public/views/polls/result.ejs'), {
+                poll,
+                authorised: true
+            })
+        } else {
             res.send('you have not voted yet, please vote to see the results!')
         }
     }
