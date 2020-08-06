@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="/views/polls/resultform.css">
 </head>
 <body>
     <form action="/showpoll/<%=id%>" method="POST">
         Username :<br><input type="text" name="username"><br><br>
         Password :<br><input type="password" name="password"><br><br>
-        <input value="<%=id%>" name="id"><br><br>
-        <input type="submit">
+        <input type="text" value="<%=id%>" name="id"><br><br>
+        <input type="submit" id="submit">
     </form>
 </body>
 </html>
