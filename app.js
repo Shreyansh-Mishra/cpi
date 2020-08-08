@@ -20,7 +20,7 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-var underdevelopment = true;
+var underdevelopment = false;
 app.set('json spaces', 2);
 
 
@@ -110,7 +110,7 @@ app.get('/updatelogin', async function (req, res) {
 
 app.get('/deletedb', async function (req, res) {
     if (underdevelopment) {
-        arg = {'question': 'why are you gay xd'}
+        arg = {}
         if (arg === {}) {
             res.send('delete arg cannot be empty');
         } else {
