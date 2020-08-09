@@ -20,7 +20,7 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-var underdevelopment = false;
+var underdevelopment = true;
 app.set('json spaces', 2);
 
 
@@ -31,7 +31,7 @@ app.get('/signup', function (req, res) {
 const User = require('./models/user.js');
 const todo = require('./models/event.js');
 const Polls = require('./models/polls.js');
-const polls = require('./models/polls.js');
+const Resetpassword = require('./models/resetpassword.js');
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
@@ -48,9 +48,10 @@ app.get('/showdb', async function (req, res) {
         db = await User.find({})
         db2 = await todo.find({})
         db3 = await Polls.find({})
+        db4 = await Resetpassword.find({})
         res.status(200)
         res.type('json');
-        res.send("User Database:\n\n" + JSON.stringify(db, null, "\t") + "\n\nEvent Database:\n\n" + JSON.stringify(db2, null, "\t") + "\n\nPoll Database:\n\n" + JSON.stringify(db3, null, "\t"))
+        res.send("User Database:\n\n" + JSON.stringify(db, null, "\t") + "\n\nEvent Database:\n\n" + JSON.stringify(db2, null, "\t") + "\n\nPoll Database:\n\n" + JSON.stringify(db3, null, "\t") + "\n\nReset Password Database:\n\n" + JSON.stringify(db4, null, "\t"))
     } else {
         res.status(404);
         res.render(path.join(__dirname, '/public/views/404/index.ejs'), {
@@ -442,6 +443,81 @@ app.post('/showpoll/:id', async (req, res) => {
 app.get('/keepalive', async (req, res) => {
     res.send('Ping Recieved');
     console.log('Ping Recieved');
+})
+
+
+app.get('/changepassword/:id', async (req, res) => {
+    let user = await User.find({});
+    user = user[req.params.id-1];
+    if (user!=null || user!=undefined) {
+        data = {
+            'for': user.name,
+            'id': makeid(25)
+        }   
+        let link = new Resetpassword(data);
+        await link.save(function (err, link) {
+            if (err) {
+                console.log("Error: "+err);
+            }
+            else {
+                console.log(link);
+            }
+        });
+        var ip = (req.headers['x-forwarded-for'] || '').split(',').pop().trim() || 
+         req.connection.remoteAddress || 
+         req.socket.remoteAddress || 
+         req.connection.socket.remoteAddress
+        const mailOptions = {
+            from: process.env.email,
+            to: user.instituteEmail,
+            subject: 'Password Reset Link for CPI', // Subject line
+            html: `
+            <h1 style="color: blue;">Password Reset Link for CPI<h1><br>
+            <h3 style="color: green;">To reset your password:<h3>
+            <a href="${process.env.hosturl}resetpassword/${link.id}"><button>Click Here</button></a>
+            <h4 style= "color: red;">If this was not requested by you, please ignore this mail. The Link will automatically expire in 30 Minutes.</h4>
+            Request was sent from IP: ${ip}
+            ` // plain text body
+            
+        };
+        await transporter.sendMail(mailOptions, function (err, info) {
+            if (err)
+                console.log(err)
+            else
+                console.log(info);
+        });
+        res.send("Please Check your Institute Email to get the link to reset your password.")
+    }
+    else {
+        res.send("User not found.")
+    }
+})
+
+app.get('/resetpassword/:id', async (req, res) => {
+    let link = await Resetpassword.findOne({'id': req.params.id});
+    if (link===null) {
+        res.send("Your password reset link is wrong, or has expired.");
+    }
+    else {
+        res.render(path.join(__dirname, '/public/views/resetpassword/resetpassword.ejs'), {id: link.id});
+    }
+})
+
+app.post('/passwordchange', async (req, res) => {
+    let data = req.body;
+    let id = data.id;
+    let link = await Resetpassword.findOne({'id': id});
+    if (link===null) {
+        res.send("Your password reset link has probably expired, or it was edited.");
+    }
+    else {
+        let name = link.for;
+        let user = await User.findOne({'name': name});
+        user.password = data.password;
+        await user.save();
+        await link.remove();
+        res.send("Your password has been changed successfully.");
+    }
 })
 
 app.use(function (req, res, next) {
