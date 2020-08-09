@@ -33,12 +33,13 @@ input[type=password]{
 input[type=submit]{
     font-family: Lexend;
     font-weight: bolder;
-    padding: 10px;
-    width: 50%;
+    padding: 8px;
+    text-align: center;
+    width: 100%;
     background:none;
    border-bottom: 2px solid red;
    outline: none;
-   margin: 0% 25% 0% 25%;
+   margin: 0% 20% 0% 20%;
 }
 
 textarea{
@@ -58,7 +59,7 @@ input:focus {
 
 #submit{
     cursor: pointer;
-    width: 10%;
+    width: 15%;
     background-color: orange; 
 
 }

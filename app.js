@@ -20,7 +20,7 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-var underdevelopment = true;
+var underdevelopment = false;
 app.set('json spaces', 2);
 
 
