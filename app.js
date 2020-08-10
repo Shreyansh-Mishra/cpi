@@ -272,7 +272,7 @@ app.post('/changeprofile/:id', async (req, res) => {
         res.send("User not Found.")
     }
     else {
-        if (data.oldusername===user.username) {
+        if (data.oldusername===user.username && data.oldpassword===user.password) {
             Object.keys(data).forEach(d => {
                 user[d]=data[d]
             });
