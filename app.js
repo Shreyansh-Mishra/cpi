@@ -1,3 +1,4 @@
+//import node modules
 var express = require('express');
 const http = require('http');
 var path = require('path');
@@ -5,7 +6,11 @@ var app = express();
 let ejs = require('ejs');
 var bodyParser = require('body-parser');
 var nodemailer = require('nodemailer');
-require('dotenv').config()
+
+//use dotenv module to hide secret variables in .env file
+require('dotenv').config();
+
+//create an email transporter
 var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -14,35 +19,42 @@ var transporter = nodemailer.createTransport({
     }
 });
 
+//set the Title Logo for the website
 app.use('/favicon.ico', express.static('public/favicon.ico'));
+
+//make express use bodyParser module's json
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
 
+//variable used while under development, to perform actions on Database
 var underdevelopment = false;
+
+//use for sending beautified JSON data
 app.set('json spaces', 2);
-
-
-app.get('/signup', function (req, res) {
-    res.render(path.join(__dirname, '/public/views/signup/signup.ejs'))
-})
-
+//import MongoDB Models
 const User = require('./models/user.js');
 const todo = require('./models/event.js');
 const Polls = require('./models/polls.js');
 const Resetpassword = require('./models/resetpassword.js');
+
+//set render engine to ejs
 app.set('view engine', 'ejs');
+
+//make public a static directory
 app.use(express.static('public'));
 
+//render homepage
 app.get('/', function (req, res) {
     res.render(path.join(__dirname, '/public/views/index/index.ejs'));
 });
-
+//render registration page
 app.get('/form', function (req, res) {
     res.render(path.join(__dirname, '/public/views/form/form.ejs'));
 })
 
+//displays JSON all the MongoDB Models, only when underdevelopment is true
 app.get('/showdb', async function (req, res) {
     if (underdevelopment) {
         db = await User.find({})
@@ -60,6 +72,7 @@ app.get('/showdb', async function (req, res) {
     }
 })
 
+//used to update Database Documents, only when underdevelopment is true
 app.get('/updatedb', async function (req, res) {
     if (underdevelopment) {
         let user = await User.findOne({});
@@ -74,8 +87,7 @@ app.get('/updatedb', async function (req, res) {
     }
 })
 
-// random password generator
-
+// random password/id generator
 function makeid(length) {
     var result = '';
     var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789$-_.+!*(),';
@@ -87,8 +99,7 @@ function makeid(length) {
 }
 
 
-//updating userID and password
-
+//updates userID and password, assigns an username and a random password to every user.
 app.get('/updatelogin', async function (req, res) {
     if (underdevelopment) {
         let db = await User.find({});
@@ -108,7 +119,7 @@ app.get('/updatelogin', async function (req, res) {
     }
 })
 
-
+//used to delete a MongoDB Document, only when underdevelopment is true
 app.get('/deletedb', async function (req, res) {
     if (underdevelopment) {
         arg = {}
@@ -125,6 +136,7 @@ app.get('/deletedb', async function (req, res) {
     }
 })
 
+//handles registration form's post to create a new user in the MongoDB Model
 app.post('/submitform', (req, res) => {
     var post = new User(req.body);
     console.log(req.body)
@@ -134,7 +146,7 @@ app.post('/submitform', (req, res) => {
     });
 });
 
-
+//render profile page of an user
 app.get('/profile/:id', async function (req, res) {
     var users = await User.find({});
     var userprofile = users[parseInt(req.params.id) - 1];
@@ -148,6 +160,7 @@ app.get('/profile/:id', async function (req, res) {
     }
 })
 
+//render room pages
 app.get('/rooms/:id', async function (req, res) {
     var rooms = ['s4', 's7', 's8'];
     var users = await User.find({});
@@ -194,6 +207,7 @@ app.get('/rooms/:id', async function (req, res) {
     }
 })
 
+//render Email Broadcast Page, used to send emails
 app.get('/broadcast', async function (req, res) {
     let db = await User.find({});
     emails = []
@@ -219,6 +233,7 @@ app.get('/broadcast', async function (req, res) {
     });
 })
 
+//Handle the post request after submitting the email form, to send an email
 app.post('/sendemail', async (req, res) => {
     let recipients = Object.values(req.body);
     let subject = req.body.subject;
@@ -250,7 +265,7 @@ app.post('/sendemail', async (req, res) => {
     }
 })
 
-
+//renders the page to edit a user's profile
 app.get('/editprofile/:id', async (req, res) => {
     let user = await User.find({})
     user = user[parseInt(req.params.id) - 1]
@@ -262,34 +277,35 @@ app.get('/editprofile/:id', async (req, res) => {
 
 })
 
+//handles the post request for the profile editing page form
 app.post('/changeprofile/:id', async (req, res) => {
     let id = req.params.id;
     let data = req.body;
     let user = await User.find({})
-    user = user[id-1];
-    if (user===null || user===undefined) {
+    user = user[id - 1];
+    if (user === null || user === undefined) {
         res.status(404)
         res.send("User not Found.")
-    }
-    else {
-        if (data.oldusername===user.username && data.oldpassword===user.password) {
+    } else {
+        if (data.oldusername === user.username && data.oldpassword === user.password) {
             Object.keys(data).forEach(d => {
-                user[d]=data[d]
+                user[d] = data[d]
             });
             await user.save();
             res.send("Edited your profile.")
+        } else {
+            res.send("you cannot edit the profile of someone else!")
         }
-        else {
-        res.send("you cannot edit the profile of someone else!")
-    }
 
     }
 })
 
+//renders form to add a new TO-DO to the Event Planner
 app.get('/addevent', (req, res) => {
     res.render(path.join(__dirname, '/public/views/event/event.ejs'));
 })
 
+//handles the data recieved to create a new Document in the eventplanner database
 app.post('/eventpending', async (req, res) => {
     var addTodo = new todo(req.body);
 
@@ -302,7 +318,7 @@ app.post('/eventpending', async (req, res) => {
         }
     })
 })
-
+//renders the event planner
 app.get('/eventplanner', async (req, res) => {
     var pending = await todo.find({})
     var eventleft = []
@@ -318,6 +334,7 @@ app.get('/eventplanner', async (req, res) => {
 
 })
 
+//renders the polls page, allowing to vote or check the results of a poll
 app.get('/polls', async (req, res) => {
     let polls = await Polls.find({});
     res.render(path.join(__dirname, '/public/views/polls/polls.ejs'), {
@@ -327,10 +344,11 @@ app.get('/polls', async (req, res) => {
 
 })
 
+//renders the form to create a poll
 app.get('/createpoll', (req, res) => {
     res.render(path.join(__dirname, "/public/views/polls/createpoll.ejs"));
 })
-
+//recieves data from the form and makes a new document inside the Database for the poll
 app.post('/makepoll', async (req, res) => {
     let data = req.body;
     let user = await User.findOne({
@@ -363,6 +381,7 @@ app.post('/makepoll', async (req, res) => {
     }
 })
 
+//displays a poll with a specific id, allowing to vote
 app.get('/poll/:id', async (req, res) => {
     let poll = await Polls.findOne({
         'id': req.params.id
@@ -381,6 +400,7 @@ app.get('/poll/:id', async (req, res) => {
     }
 })
 
+//handles vote requests
 app.post('/submitpoll', async (req, res) => {
     let data = req.body;
     console.log(data)
@@ -410,12 +430,14 @@ app.post('/submitpoll', async (req, res) => {
     }
 })
 
+//renders form to view the poll results
 app.get('/viewpoll/:id', async (req, res) => {
     res.render(path.join(__dirname + "/public/views/polls/resultform.ejs"), {
         id: req.params.id
     })
 })
 
+//displays the poll results after checking if the user is authenticated to view the results
 app.post('/showpoll/:id', async (req, res) => {
     let data = req.body;
     let user = await User.findOne({
@@ -440,33 +462,33 @@ app.post('/showpoll/:id', async (req, res) => {
     }
 })
 
+//a page to keep the server online, this page gets pinged every 30 seconds so that the server doesn't die on services like glitch.com and repl.it
 app.get('/keepalive', async (req, res) => {
     res.send('Ping Recieved');
     console.log('Ping Recieved');
 })
 
-
+//generates a password change link and sends it to the user's email address
 app.get('/changepassword/:id', async (req, res) => {
     let user = await User.find({});
-    user = user[req.params.id-1];
-    if (user!=null || user!=undefined) {
+    user = user[req.params.id - 1];
+    if (user != null || user != undefined) {
         data = {
             'for': user.name,
             'id': makeid(25)
-        }   
+        }
         let link = new Resetpassword(data);
         await link.save(function (err, link) {
             if (err) {
-                console.log("Error: "+err);
-            }
-            else {
+                console.log("Error: " + err);
+            } else {
                 console.log(link);
             }
         });
-        var ip = (req.headers['x-forwarded-for'] || '').split(',').pop().trim() || 
-         req.connection.remoteAddress || 
-         req.socket.remoteAddress || 
-         req.connection.socket.remoteAddress
+        var ip = (req.headers['x-forwarded-for'] || '').split(',').pop().trim() ||
+            req.connection.remoteAddress ||
+            req.socket.remoteAddress ||
+            req.connection.socket.remoteAddress
         const mailOptions = {
             from: process.env.email,
             to: user.instituteEmail,
@@ -478,7 +500,7 @@ app.get('/changepassword/:id', async (req, res) => {
             <h4 style= "color: red;">If this was not requested by you, please ignore this mail. The Link will automatically expire in 30 Minutes.</h4>
             Request was sent from IP: ${ip}
             ` // plain text body
-            
+
         };
         await transporter.sendMail(mailOptions, function (err, info) {
             if (err)
@@ -487,32 +509,39 @@ app.get('/changepassword/:id', async (req, res) => {
                 console.log(info);
         });
         res.send("Please Check your Institute Email to get the link to reset your password.")
-    }
-    else {
+    } else {
         res.send("User not found.")
     }
 })
 
+//render the form used to reset password, after checking if the link is correct
 app.get('/resetpassword/:id', async (req, res) => {
-    let link = await Resetpassword.findOne({'id': req.params.id});
-    if (link===null) {
+    let link = await Resetpassword.findOne({
+        'id': req.params.id
+    });
+    if (link === null) {
         res.send("Your password reset link is wrong, or has expired.");
-    }
-    else {
-        res.render(path.join(__dirname, '/public/views/resetpassword/resetpassword.ejs'), {id: link.id});
+    } else {
+        res.render(path.join(__dirname, '/public/views/resetpassword/resetpassword.ejs'), {
+            id: link.id
+        });
     }
 })
 
+//handle the new password received from the form, and change the user's password to it
 app.post('/passwordchange', async (req, res) => {
     let data = req.body;
     let id = data.id;
-    let link = await Resetpassword.findOne({'id': id});
-    if (link===null) {
+    let link = await Resetpassword.findOne({
+        'id': id
+    });
+    if (link === null) {
         res.send("Your password reset link has probably expired, or it was edited.");
-    }
-    else {
+    } else {
         let name = link.for;
-        let user = await User.findOne({'name': name});
+        let user = await User.findOne({
+            'name': name
+        });
         user.password = data.password;
         await user.save();
         await link.remove();
@@ -520,6 +549,7 @@ app.post('/passwordchange', async (req, res) => {
     }
 })
 
+//render 404 page, if the requested URL is wrong or doesn't exist on the server 
 app.use(function (req, res, next) {
     res.status(404);
     res.render(path.join(__dirname, '/public/views/404/index.ejs'), {
@@ -527,9 +557,10 @@ app.use(function (req, res, next) {
     });
 });
 
+//listen on port 3000
+app.listen(3000, () => console.log("Listening on Port 3000"));
 
-
-app.listen(3000);
+//keep pinging /keepalive every 30 seconds to keep the server alive on services like glitch.com and repl.it
 setInterval(() => {
     http.get(`http://localhost:3000/keepalive`);
-  }, 30000);
+}, 30000);
