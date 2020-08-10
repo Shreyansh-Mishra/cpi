@@ -64,3 +64,17 @@ input:focus {
 
 }
 
+#resetpassword {
+    font-family: Lexend;
+    font-weight: bolder;
+    padding: 8px;
+    text-align: center;
+    width: 100%;
+    background:none;
+    border-bottom: 2px solid red;
+    outline: none;
+    margin: 0% 20% 0% 20%;
+    cursor: pointer;
+    width: 15%;
+    background-color: orange; 
+}
