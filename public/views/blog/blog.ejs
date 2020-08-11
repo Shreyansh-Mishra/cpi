@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chacha's Corner</title>
+    <link rel="stylesheet" href="views/blog/style.css">
+</head>
+<body bgcolor="black">
+    <center><div style="color:azure; font-size: 3vw;">Shitposting Section</h1></center>
+    <%let index = 1;%>
+    <%blog = blog.reverse()%>
+    <%blog.forEach(ele=>{%>
+        <%index = 1%>
+        <% for(i=0;i<users.length;i++) {%>
+        <%if (users[i].name===ele.by){%>
+        <%break;} else{index++;%>
+            <%}%>
+        <% } %>
+        <%=index%>  
+        <%var color = ["#9400D3","#4B0082","#0000FF","#00FF00","#FFFF00","#FF7F00","#FF0000"];%>
+        <div style="border: <%=color[Math.floor(Math.random()*7)]%> solid 1px;">
+        <%var time = ele.date.toString().split(" ").slice(0,5).join(" ")%>
+        <p id="name"><img src="/images/<%=ele.by.split(" ").join("").toLowerCase()%>.jpg" height="5%" width="5%" padding = "5px">
+        <a href="/profile/<%=index%>"><%=ele.by%></p></a>
+        <p id="post"><%=ele.post%></p>
+        <p id="date"><%=time%></p>
+        <p id="delete"><a href="/deleteblog/<%=ele.id%>">🗑️</a></p>
+        </div>
+    <%})%>
+    <form action="/postblog" method="POST">
+    <div id='formtitle'>Create a Post:</div>
+    Username:<br><input type="text" name="username"><br><br>
+    Password:<br><input type="password" name="password"><br><br>
+    Post:<br><textarea rows="10" cols="100" name="post" placeholder="Write your shit here..."></textarea><br><br>
+    <input type="submit" id="submit" value="Post"><br><br>
+    </form>
+    
+    
+    
+</body>
+</html>

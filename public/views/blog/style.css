@@ -1,0 +1,132 @@
+div{
+    margin-right: 10%;
+    margin-left: 10%;
+    margin-bottom:2%;
+    margin-top: 2%;
+
+}
+form{
+    margin: 7%;
+}
+
+#name{
+    padding: 2%;
+    font-size: 1.3vw;
+    height: auto;
+    color: azure;
+    font-family: lucida console;
+}
+
+#post{
+    padding: 2%;
+    color: azure;
+    font-family: 'lucida console';
+    font-size: 1.3vw;
+}
+
+#date{
+    padding-right: 2%;
+    color: azure;
+    text-align: right;
+}
+#delete{
+    padding-right: 2%;
+    color: azure;
+    text-align: right;
+    cursor: pointer;
+}
+
+@font-face{
+    font-family: Lexend;
+    src: url('/fonts/lexend.ttf');
+  }
+form{
+    text-align: center;
+    font-family: Verdana;
+    font-size: 1.0vw;
+    font-weight: bold;
+}
+input[type=text]{
+    font-family: Lexend;
+    font-weight: bolder;
+    padding: 10px;
+    width: 50%;
+    background-color:azure;
+   border-bottom: 2px solid red;
+   outline: none;
+   margin: 0% 25% 0% 25%;
+}
+
+input[type=password]{
+    font-family: Lexend;
+    font-weight: bolder;
+    padding: 10px;
+    width: 50%;
+    background-color:azure;
+   border-bottom: 2px solid red;
+   outline: none;
+   margin: 0% 25% 0% 25%;
+}
+
+input[type=submit]{
+    font-family: Lexend;
+    font-weight: bolder;
+    padding: 10px;
+    width: 50%;
+    background:none;
+   border-bottom: 2px solid red;
+   outline: none;
+   align-items: center;
+   margin: 0% 25% 0% 25%;
+}
+
+textarea{
+    font-family: Lexend;
+    font-weight: bolder;
+    padding: 10px;
+    width: 50%;
+    background:none;
+   border: 2px solid;
+   outline: none;
+   margin: 0% 25% 0% 25%;
+}
+
+input:focus {
+    border-bottom: 4px solid red;
+}
+
+#submit{
+    cursor: pointer;
+    background-color: #ee6d03;
+    border: none;
+    border-radius: 12px;
+    color: white;
+    width: 52%;
+    padding: 10px 30px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+textarea{
+    background-color: azure;
+}
+
+form{
+    color: azure;
+}
+
+#formtitle{
+    font-size: 1.5vw;
+}
+a {
+    
+    color: azure;
+}
+
+a:hover 
+{ 
+     text-decoration:none; 
+     color: azure;
+     cursor:pointer;  
+}
