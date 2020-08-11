@@ -61,9 +61,10 @@ app.get('/showdb', async function (req, res) {
         db2 = await todo.find({})
         db3 = await Polls.find({})
         db4 = await Resetpassword.find({})
+        db5 = await Blog.find({})
         res.status(200)
         res.type('json');
-        res.send("User Database:\n\n" + JSON.stringify(db, null, "\t") + "\n\nEvent Database:\n\n" + JSON.stringify(db2, null, "\t") + "\n\nPoll Database:\n\n" + JSON.stringify(db3, null, "\t") + "\n\nReset Password Database:\n\n" + JSON.stringify(db4, null, "\t"))
+        res.send("User Database:\n\n" + JSON.stringify(db, null, "\t") + "\n\nEvent Database:\n\n" + JSON.stringify(db2, null, "\t") + "\n\nPoll Database:\n\n" + JSON.stringify(db3, null, "\t") + "\n\nReset Password Database:\n\n" + JSON.stringify(db4, null, "\t") + "\n\nBlog Database:\n\n" + JSON.stringify(db5, null, "\t"))
     } else {
         res.status(404);
         res.render(path.join(__dirname, '/public/views/404/index.ejs'), {
@@ -552,25 +553,26 @@ app.post('/passwordchange', async (req, res) => {
 /*Code for shitposting section starts here*/
 
 
-app.post('/postblog',async (req,res)=>{
+app.post('/postblog', async (req, res) => {
     var data = req.body;
     var username = data.username;
     var password = data.password;
-    var user = await User.findOne({'username': username, 'password': password});
-    if(user===null){
+    var user = await User.findOne({
+        'username': username,
+        'password': password
+    });
+    if (user === null) {
         res.send('username/password is wrong or you are not registered in our database');
-    }
-    else{
+    } else {
         var by = user.name;
         var id = makeid(30);
         data.id = id;
         data.by = by;
-        var blog = new Blog(data);    
-        await blog.save((err,data)=>{
-            if(err){
-                console.log("Error: "+ err);
-            }
-            else{
+        var blog = new Blog(data);
+        await blog.save((err, data) => {
+            if (err) {
+                console.log("Error: " + err);
+            } else {
                 console.log(data);
             }
         });
@@ -578,11 +580,46 @@ app.post('/postblog',async (req,res)=>{
     }
 })
 
-app.get('/viewblog',async (req,res)=>{
+app.get('/viewblog', async (req, res) => {
     var blog = await Blog.find({});
     var users = await User.find({});
-    console.log(blog);
-    res.render(path.join(__dirname,'/public/views/blog/blog.ejs'),{blog,users});
+    res.render(path.join(__dirname, '/public/views/blog/blog.ejs'), {
+        blog,
+        users
+    });
+})
+
+app.get('/deleteblog/:id', async (req, res) => {
+    var id = req.params.id;
+    res.render(path.join(__dirname, '/public/views/blog/deleteblog.ejs'), {
+        id
+    })
+})
+
+app.post('/blogdelete/:id', async (req, res) => {
+    var data = req.body;
+    var post = await Blog.findOne({
+        'id': req.params.id
+    });
+    if (post === null) {
+        res.send('Post does not exist');
+    } else {
+        var user = await User.findOne({
+            'username': data.username,
+            'password': data.password,
+            'name': post.by
+        });
+
+        console.log(user);
+
+        if (user === null) {
+            res.send("You are not allowed to edit this post!")
+        } else {
+            await post.remove();
+            res.redirect('/viewblog')
+        }
+    }
+
 })
 
 /*Code for shitposting section ends here*/
