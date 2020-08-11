@@ -10,5 +10,5 @@ const blog = new Schema({
     id: {type: String}
 });
 
-var Blog = mongoose.model('blogtest', blog);
+var Blog = mongoose.model('blog', blog);
 module.exports = Blog;
