@@ -38,7 +38,7 @@ const User = require('./models/user.js');
 const todo = require('./models/event.js');
 const Polls = require('./models/polls.js');
 const Resetpassword = require('./models/resetpassword.js');
-
+const Blog = require('./models/blog.js');
 //set render engine to ejs
 app.set('view engine', 'ejs');
 
@@ -548,6 +548,45 @@ app.post('/passwordchange', async (req, res) => {
         res.send("Your password has been changed successfully.");
     }
 })
+
+/*Code for shitposting section starts here*/
+
+
+app.post('/postblog',async (req,res)=>{
+    var data = req.body;
+    var username = data.username;
+    var password = data.password;
+    var user = await User.findOne({'username': username, 'password': password});
+    if(user===null){
+        res.send('username/password is wrong or you are not registered in our database');
+    }
+    else{
+        var by = user.name;
+        var id = makeid(30);
+        data.id = id;
+        data.by = by;
+        var blog = new Blog(data);    
+        await blog.save((err,data)=>{
+            if(err){
+                console.log("Error: "+ err);
+            }
+            else{
+                console.log(data);
+            }
+        });
+        res.redirect('/viewblog');
+    }
+})
+
+app.get('/viewblog',async (req,res)=>{
+    var blog = await Blog.find({});
+    var users = await User.find({});
+    console.log(blog);
+    res.render(path.join(__dirname,'/public/views/blog/blog.ejs'),{blog,users});
+})
+
+/*Code for shitposting section ends here*/
+
 
 //render 404 page, if the requested URL is wrong or doesn't exist on the server 
 app.use(function (req, res, next) {
